@@ -1,13 +1,16 @@
 import {
   Outlet,
   ScrollRestoration,
-  createRootRoute,
+  createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
+import { QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ClerkProvider } from "@clerk/tanstack-start";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+}>()({
   head: () => ({
     meta: [
       {

@@ -2,6 +2,9 @@ import { SignedIn } from "@clerk/tanstack-start";
 import * as fs from "node:fs";
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../convex/_generated/api";
 
 const filePath = "count.txt";
 
@@ -32,6 +35,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const router = useRouter();
   const state = Route.useLoaderData();
+  const { data } = useSuspenseQuery(convexQuery(api.tasks.get, {}));
 
   return (
     <div>
@@ -45,6 +49,11 @@ function Home() {
       >
         Add 1 to {state}?
       </button>
+      <div>
+        {data.map(({ _id, text }) => (
+          <div key={_id}>{text}</div>
+        ))}
+      </div>
       <SignedIn>
         <div>
           <Link to="/admin/catalog">Catalog</Link>
