@@ -1,4 +1,4 @@
-import { SignedIn } from "@clerk/tanstack-start";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/tanstack-start";
 import * as fs from "node:fs";
 import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
@@ -51,6 +51,12 @@ function Home() {
           <Link to="/tasks">Tasks</Link>
         </div>
       </SignedIn>
+
+      <SignedOut>
+        <div>
+          <SignInButton />
+        </div>
+      </SignedOut>
     </div>
   );
 }

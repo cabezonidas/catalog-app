@@ -1,9 +1,9 @@
-import { createServerFn } from "@tanstack/start";
+import { createMiddleware } from "@tanstack/start";
 import { getAuth } from "@clerk/tanstack-start/server";
 import { getWebRequest } from "vinxi/http";
 import { createClerkClient } from "@clerk/backend";
 
-export const isAdmin = createServerFn({ method: "GET" }).handler(async () => {
+export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const { userId, has } = await getAuth(getWebRequest(), {});
 
   const clerkClient = createClerkClient({
@@ -16,9 +16,7 @@ export const isAdmin = createServerFn({ method: "GET" }).handler(async () => {
     throw Error("Not authenticated");
   }
 
-  if (!has({ permission: "org:catalog:manage" })) {
-    throw Error("Not authorized");
-  }
-
-  return { id: user.id };
+  return next({
+    context: { user, isAdmin: has({ permission: "org:catalog:manage" }) },
+  });
 });

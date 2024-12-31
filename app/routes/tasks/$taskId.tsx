@@ -19,11 +19,12 @@ function RouteComponent() {
       <div>Hello "/admin/tasks/$id"!</div>
       <div>{text}</div>
       <div>Completed: {isCompleted ? "Yes" : "False"}</div>
-      <div>
+      <ul>
         <Link to="/tasks/$taskId/edit" params={{ taskId: id }}>
           Edit
         </Link>
-      </div>
+        <Link to="/tasks">View all</Link>
+      </ul>
     </div>
   );
 }
