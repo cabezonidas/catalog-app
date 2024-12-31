@@ -12,7 +12,10 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
-import { Route as AdminCatalogImport } from './routes/admin/catalog'
+import { Route as TasksIndexImport } from './routes/tasks/index'
+import { Route as TasksNewImport } from './routes/tasks/new'
+import { Route as TasksTaskIdImport } from './routes/tasks/$taskId'
+import { Route as TasksTaskIdEditImport } from './routes/tasks_/$taskId/edit'
 
 // Create/Update Routes
 
@@ -22,9 +25,27 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AdminCatalogRoute = AdminCatalogImport.update({
-  id: '/admin/catalog',
-  path: '/admin/catalog',
+const TasksIndexRoute = TasksIndexImport.update({
+  id: '/tasks/',
+  path: '/tasks/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TasksNewRoute = TasksNewImport.update({
+  id: '/tasks/new',
+  path: '/tasks/new',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TasksTaskIdRoute = TasksTaskIdImport.update({
+  id: '/tasks/$taskId',
+  path: '/tasks/$taskId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TasksTaskIdEditRoute = TasksTaskIdEditImport.update({
+  id: '/tasks_/$taskId/edit',
+  path: '/tasks/$taskId/edit',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +60,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/admin/catalog': {
-      id: '/admin/catalog'
-      path: '/admin/catalog'
-      fullPath: '/admin/catalog'
-      preLoaderRoute: typeof AdminCatalogImport
+    '/tasks/$taskId': {
+      id: '/tasks/$taskId'
+      path: '/tasks/$taskId'
+      fullPath: '/tasks/$taskId'
+      preLoaderRoute: typeof TasksTaskIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/tasks/new': {
+      id: '/tasks/new'
+      path: '/tasks/new'
+      fullPath: '/tasks/new'
+      preLoaderRoute: typeof TasksNewImport
+      parentRoute: typeof rootRoute
+    }
+    '/tasks/': {
+      id: '/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tasks_/$taskId/edit': {
+      id: '/tasks_/$taskId/edit'
+      path: '/tasks/$taskId/edit'
+      fullPath: '/tasks/$taskId/edit'
+      preLoaderRoute: typeof TasksTaskIdEditImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +95,63 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin/catalog': typeof AdminCatalogRoute
+  '/tasks/$taskId': typeof TasksTaskIdRoute
+  '/tasks/new': typeof TasksNewRoute
+  '/tasks': typeof TasksIndexRoute
+  '/tasks/$taskId/edit': typeof TasksTaskIdEditRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin/catalog': typeof AdminCatalogRoute
+  '/tasks/$taskId': typeof TasksTaskIdRoute
+  '/tasks/new': typeof TasksNewRoute
+  '/tasks': typeof TasksIndexRoute
+  '/tasks/$taskId/edit': typeof TasksTaskIdEditRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/admin/catalog': typeof AdminCatalogRoute
+  '/tasks/$taskId': typeof TasksTaskIdRoute
+  '/tasks/new': typeof TasksNewRoute
+  '/tasks/': typeof TasksIndexRoute
+  '/tasks_/$taskId/edit': typeof TasksTaskIdEditRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin/catalog'
+  fullPaths:
+    | '/'
+    | '/tasks/$taskId'
+    | '/tasks/new'
+    | '/tasks'
+    | '/tasks/$taskId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/catalog'
-  id: '__root__' | '/' | '/admin/catalog'
+  to: '/' | '/tasks/$taskId' | '/tasks/new' | '/tasks' | '/tasks/$taskId/edit'
+  id:
+    | '__root__'
+    | '/'
+    | '/tasks/$taskId'
+    | '/tasks/new'
+    | '/tasks/'
+    | '/tasks_/$taskId/edit'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminCatalogRoute: typeof AdminCatalogRoute
+  TasksTaskIdRoute: typeof TasksTaskIdRoute
+  TasksNewRoute: typeof TasksNewRoute
+  TasksIndexRoute: typeof TasksIndexRoute
+  TasksTaskIdEditRoute: typeof TasksTaskIdEditRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminCatalogRoute: AdminCatalogRoute,
+  TasksTaskIdRoute: TasksTaskIdRoute,
+  TasksNewRoute: TasksNewRoute,
+  TasksIndexRoute: TasksIndexRoute,
+  TasksTaskIdEditRoute: TasksTaskIdEditRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +165,26 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/admin/catalog"
+        "/tasks/$taskId",
+        "/tasks/new",
+        "/tasks/",
+        "/tasks_/$taskId/edit"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/admin/catalog": {
-      "filePath": "admin/catalog.tsx"
+    "/tasks/$taskId": {
+      "filePath": "tasks/$taskId.tsx"
+    },
+    "/tasks/new": {
+      "filePath": "tasks/new.tsx"
+    },
+    "/tasks/": {
+      "filePath": "tasks/index.tsx"
+    },
+    "/tasks_/$taskId/edit": {
+      "filePath": "tasks_/$taskId/edit.tsx"
     }
   }
 }
