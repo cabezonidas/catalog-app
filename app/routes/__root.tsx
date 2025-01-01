@@ -7,6 +7,7 @@ import { Meta, Scripts } from "@tanstack/start";
 import { QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ClerkProvider } from "@clerk/tanstack-start";
+import React, { Suspense } from "react";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -28,10 +29,22 @@ export const Route = createRootRouteWithContext<{
   component: RootComponent,
 });
 
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === "production"
+    ? () => null
+    : React.lazy(() =>
+        import("@tanstack/router-devtools").then((res) => ({
+          default: res.TanStackRouterDevtools,
+        }))
+      );
+
 function RootComponent() {
   return (
     <RootDocument>
       <Outlet />
+      <Suspense>
+        <TanStackRouterDevtools />
+      </Suspense>
     </RootDocument>
   );
 }
