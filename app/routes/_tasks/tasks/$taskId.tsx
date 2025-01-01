@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { tasks } from "../../../convex/tasks";
+import { tasks } from "../../../../convex/tasks";
 
-export const Route = createFileRoute("/tasks/$taskId")({
+export const Route = createFileRoute("/_tasks/tasks/$taskId")({
   loader: async ({ params, context: { queryClient } }) => {
     await queryClient.ensureQueryData(tasks.get(params.taskId));
   },
@@ -16,15 +16,15 @@ function RouteComponent() {
   } = useSuspenseQuery(tasks.get(id));
   return (
     <div>
-      <div>Hello "/admin/tasks/$id"!</div>
-      <div>{text}</div>
-      <div>Completed: {isCompleted ? "Yes" : "False"}</div>
-      <ul>
+      <h2>
+        <span>{isCompleted ? "✅" : "❌"} </span>
+        <span>{text}</span>
+      </h2>
+      <div>
         <Link to="/tasks/$taskId/edit" params={{ taskId: id }}>
           Edit
         </Link>
-        <Link to="/tasks">View all</Link>
-      </ul>
+      </div>
     </div>
   );
 }

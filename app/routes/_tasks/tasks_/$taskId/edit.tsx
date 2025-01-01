@@ -1,10 +1,10 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { tasks } from "../../../../convex/tasks";
+import { tasks } from "../../../../../convex/tasks";
 import { useConvexMutation } from "@convex-dev/react-query";
-import { api } from "../../../../convex/_generated/api";
+import { api } from "../../../../../convex/_generated/api";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 
-export const Route = createFileRoute("/tasks_/$taskId/edit")({
+export const Route = createFileRoute("/_tasks/tasks_/$taskId/edit")({
   loader: async ({ params, context: { queryClient } }) => {
     return queryClient.ensureQueryData(tasks.get(params.taskId));
   },
