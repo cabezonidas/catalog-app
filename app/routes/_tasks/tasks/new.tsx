@@ -2,7 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { api } from "../../../../convex/_generated/api";
 import { useMutation } from "@tanstack/react-query";
-import { TaskForm } from "../tasks_/$taskId/edit";
+import { TaskForm } from "../-ui/taskForm";
 
 export const Route = createFileRoute("/_tasks/tasks/new")({
   component: RouteComponent,
@@ -21,15 +21,8 @@ function RouteComponent() {
     <div>
       <h2>Add</h2>
       <TaskForm
-        onSubmit={async (e) => {
-          e.preventDefault();
-          const formData = new FormData(e.currentTarget);
-
-          const created = await mutateAsync({
-            isCompleted: formData.get("isCompleted") === "on",
-            text: String(formData.get("text")),
-          });
-
+        handleSubmit={async (values) => {
+          const created = await mutateAsync(values);
           navigate({ to: "/tasks/$taskId", params: { taskId: created._id } });
         }}
       />

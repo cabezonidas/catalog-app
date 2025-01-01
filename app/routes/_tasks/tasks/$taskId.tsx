@@ -1,4 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useChildMatches,
+} from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { tasks } from "../../../../convex/tasks";
 
@@ -11,9 +16,15 @@ export const Route = createFileRoute("/_tasks/tasks/$taskId")({
 
 function RouteComponent() {
   const id = Route.useParams().taskId;
+  const childMatches = useChildMatches();
   const {
     data: { text, isCompleted },
   } = useSuspenseQuery(tasks.get(id));
+
+  if (childMatches.length) {
+    return <Outlet />;
+  }
+
   return (
     <div>
       <h2>

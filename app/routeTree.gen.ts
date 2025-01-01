@@ -17,7 +17,7 @@ import { Route as TasksTasksImport } from './routes/_tasks/tasks'
 import { Route as TasksTasksIndexImport } from './routes/_tasks/tasks/index'
 import { Route as TasksTasksNewImport } from './routes/_tasks/tasks/new'
 import { Route as TasksTasksTaskIdImport } from './routes/_tasks/tasks/$taskId'
-import { Route as TasksTasksTaskIdEditImport } from './routes/_tasks/tasks_/$taskId/edit'
+import { Route as TasksTasksTaskIdEditImport } from './routes/_tasks/tasks/$taskId.edit'
 
 // Create/Update Routes
 
@@ -58,9 +58,9 @@ const TasksTasksTaskIdRoute = TasksTasksTaskIdImport.update({
 } as any)
 
 const TasksTasksTaskIdEditRoute = TasksTasksTaskIdEditImport.update({
-  id: '/_tasks/tasks_/$taskId/edit',
-  path: '/tasks/$taskId/edit',
-  getParentRoute: () => rootRoute,
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => TasksTasksTaskIdRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -109,26 +109,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TasksTasksIndexImport
       parentRoute: typeof TasksTasksImport
     }
-    '/_tasks/tasks_/$taskId/edit': {
-      id: '/_tasks/tasks_/$taskId/edit'
-      path: '/tasks/$taskId/edit'
+    '/_tasks/tasks/$taskId/edit': {
+      id: '/_tasks/tasks/$taskId/edit'
+      path: '/edit'
       fullPath: '/tasks/$taskId/edit'
       preLoaderRoute: typeof TasksTasksTaskIdEditImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof TasksTasksTaskIdImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface TasksTasksTaskIdRouteChildren {
+  TasksTasksTaskIdEditRoute: typeof TasksTasksTaskIdEditRoute
+}
+
+const TasksTasksTaskIdRouteChildren: TasksTasksTaskIdRouteChildren = {
+  TasksTasksTaskIdEditRoute: TasksTasksTaskIdEditRoute,
+}
+
+const TasksTasksTaskIdRouteWithChildren =
+  TasksTasksTaskIdRoute._addFileChildren(TasksTasksTaskIdRouteChildren)
+
 interface TasksTasksRouteChildren {
-  TasksTasksTaskIdRoute: typeof TasksTasksTaskIdRoute
+  TasksTasksTaskIdRoute: typeof TasksTasksTaskIdRouteWithChildren
   TasksTasksNewRoute: typeof TasksTasksNewRoute
   TasksTasksIndexRoute: typeof TasksTasksIndexRoute
 }
 
 const TasksTasksRouteChildren: TasksTasksRouteChildren = {
-  TasksTasksTaskIdRoute: TasksTasksTaskIdRoute,
+  TasksTasksTaskIdRoute: TasksTasksTaskIdRouteWithChildren,
   TasksTasksNewRoute: TasksTasksNewRoute,
   TasksTasksIndexRoute: TasksTasksIndexRoute,
 }
@@ -141,7 +152,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/tasks': typeof TasksTasksRouteWithChildren
   '/admin': typeof AdminIndexRoute
-  '/tasks/$taskId': typeof TasksTasksTaskIdRoute
+  '/tasks/$taskId': typeof TasksTasksTaskIdRouteWithChildren
   '/tasks/new': typeof TasksTasksNewRoute
   '/tasks/': typeof TasksTasksIndexRoute
   '/tasks/$taskId/edit': typeof TasksTasksTaskIdEditRoute
@@ -150,7 +161,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminIndexRoute
-  '/tasks/$taskId': typeof TasksTasksTaskIdRoute
+  '/tasks/$taskId': typeof TasksTasksTaskIdRouteWithChildren
   '/tasks/new': typeof TasksTasksNewRoute
   '/tasks': typeof TasksTasksIndexRoute
   '/tasks/$taskId/edit': typeof TasksTasksTaskIdEditRoute
@@ -161,10 +172,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_tasks/tasks': typeof TasksTasksRouteWithChildren
   '/admin/': typeof AdminIndexRoute
-  '/_tasks/tasks/$taskId': typeof TasksTasksTaskIdRoute
+  '/_tasks/tasks/$taskId': typeof TasksTasksTaskIdRouteWithChildren
   '/_tasks/tasks/new': typeof TasksTasksNewRoute
   '/_tasks/tasks/': typeof TasksTasksIndexRoute
-  '/_tasks/tasks_/$taskId/edit': typeof TasksTasksTaskIdEditRoute
+  '/_tasks/tasks/$taskId/edit': typeof TasksTasksTaskIdEditRoute
 }
 
 export interface FileRouteTypes {
@@ -193,7 +204,7 @@ export interface FileRouteTypes {
     | '/_tasks/tasks/$taskId'
     | '/_tasks/tasks/new'
     | '/_tasks/tasks/'
-    | '/_tasks/tasks_/$taskId/edit'
+    | '/_tasks/tasks/$taskId/edit'
   fileRoutesById: FileRoutesById
 }
 
@@ -201,14 +212,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TasksTasksRoute: typeof TasksTasksRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
-  TasksTasksTaskIdEditRoute: typeof TasksTasksTaskIdEditRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TasksTasksRoute: TasksTasksRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
-  TasksTasksTaskIdEditRoute: TasksTasksTaskIdEditRoute,
 }
 
 export const routeTree = rootRoute
@@ -223,8 +232,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_tasks/tasks",
-        "/admin/",
-        "/_tasks/tasks_/$taskId/edit"
+        "/admin/"
       ]
     },
     "/": {
@@ -243,7 +251,10 @@ export const routeTree = rootRoute
     },
     "/_tasks/tasks/$taskId": {
       "filePath": "_tasks/tasks/$taskId.tsx",
-      "parent": "/_tasks/tasks"
+      "parent": "/_tasks/tasks",
+      "children": [
+        "/_tasks/tasks/$taskId/edit"
+      ]
     },
     "/_tasks/tasks/new": {
       "filePath": "_tasks/tasks/new.tsx",
@@ -253,8 +264,9 @@ export const routeTree = rootRoute
       "filePath": "_tasks/tasks/index.tsx",
       "parent": "/_tasks/tasks"
     },
-    "/_tasks/tasks_/$taskId/edit": {
-      "filePath": "_tasks/tasks_/$taskId/edit.tsx"
+    "/_tasks/tasks/$taskId/edit": {
+      "filePath": "_tasks/tasks/$taskId.edit.tsx",
+      "parent": "/_tasks/tasks/$taskId"
     }
   }
 }
