@@ -8,6 +8,7 @@ import { QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ClerkProvider } from "@clerk/tanstack-start";
 import React, { Suspense } from "react";
+import appCss from "../styles/index.css?url";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -25,6 +26,7 @@ export const Route = createRootRouteWithContext<{
         title: "TanStack Start Starter",
       },
     ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   component: RootComponent,
 });
