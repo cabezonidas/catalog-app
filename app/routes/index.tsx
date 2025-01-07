@@ -37,6 +37,7 @@ function Home() {
     <div>
       <button
         type="button"
+        className="btn"
         onClick={() => {
           updateCount({ data: 1 }).then(() => {
             router.invalidate();
@@ -48,7 +49,9 @@ function Home() {
 
       <SignedIn>
         <div>
-          <Link to="/tasks">Tasks</Link>
+          <Link className="link" to="/tasks">
+            Tasks
+          </Link>
         </div>
       </SignedIn>
 
