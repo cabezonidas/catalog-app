@@ -19,21 +19,21 @@ export const Route = createFileRoute("/_tasks/tasks/")({
 function RouteComponent() {
   const { data } = useSuspenseQuery(tasks.list());
   return (
-    <div>
-      <h2>List</h2>
-      <ol>
+    <div className="grid grid-rows-[auto_1fr_auto] overflow-hidden max-h-screen gap-y-4">
+      <h1 className="text-4xl font-bold">List</h1>
+      <ol className="grid gap-y-2 overflow-auto max-h-56">
         {data.map(({ _id, text, isCompleted }) => (
           <li key={_id}>
-            <span>{isCompleted ? "✅" : "❌"} </span>
-            <Link to="/tasks/$taskId/edit" params={{ taskId: _id }}>
+            <span>{isCompleted ? "🟢" : "🟡"} </span>
+            <Link to="/tasks/$taskId" params={{ taskId: _id }}>
               {text}
             </Link>
           </li>
         ))}
       </ol>
-      <div>
-        <Link to="/tasks/new">Add +</Link>
-      </div>
+      <Link to="/tasks/new" className="btn mr-auto">
+        Add task
+      </Link>
     </div>
   );
 }

@@ -1,29 +1,15 @@
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  useChildMatches,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_tasks/tasks")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const isTop = useChildMatches().every(
-    (c) => c.fullPath === Route.fullPath + "/"
-  );
-  const TasksHeading = () => <h1>TASKS</h1>;
   return (
-    <div>
-      {!isTop ? (
-        <Link to="/tasks">
-          <TasksHeading />
-        </Link>
-      ) : (
-        <TasksHeading />
-      )}
-      <Outlet />
+    <div className="flex flex-col justify-center min-h-screen">
+      <div className="card bg-base-100 w-80 shadow-xl p-4 m-auto">
+        <Outlet />
+      </div>
     </div>
   );
 }

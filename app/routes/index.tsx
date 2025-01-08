@@ -37,14 +37,14 @@ function Home() {
     <div>
       <button
         type="button"
-        className="btn"
+        className="text-base cursor-pointer underline fixed bottom-2 right-2"
         onClick={() => {
           updateCount({ data: 1 }).then(() => {
             router.invalidate();
           });
         }}
       >
-        Add 1 to {state}?
+        {state} Clicks
       </button>
 
       <SignedIn>

@@ -26,16 +26,23 @@ function RouteComponent() {
   }
 
   return (
-    <div>
-      <h2>
-        <span>{isCompleted ? "✅" : "❌"} </span>
-        <span>{text}</span>
-      </h2>
+    <div className="grid gap-y-4">
+      <Link to="/tasks" className="underline">
+        Tasks
+      </Link>
+      <h1 className="text-4xl font-bold">{text}</h1>
       <div>
-        <Link to="/tasks/$taskId/edit" params={{ taskId: id }}>
-          Edit
-        </Link>
+        {isCompleted
+          ? "🟢 Well done! You've made it"
+          : "🟡 One day you'll do it..."}
       </div>
+      <Link
+        className="mr-auto btn btn-outline"
+        to="/tasks/$taskId/edit"
+        params={{ taskId: id }}
+      >
+        Edit
+      </Link>
     </div>
   );
 }
