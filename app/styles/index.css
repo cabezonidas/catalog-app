@@ -1,8 +1,2 @@
 @import "tailwindcss";
 @plugin "daisyui";
-
-@layer base {
-  #root {
-    @apply min-h-screen;
-  }
-}
