@@ -16,6 +16,15 @@ export const getProducts = query({
   },
 });
 
+const removeBadSpaces = (text: string) => {
+  var result = text;
+  if (result.endsWith(".")) {
+    result = result.slice(0, result.length - 1);
+  }
+  result.split(" , ").join(",").trim();
+  return result;
+};
+
 export const getPublicProducts = query({
   args: {},
   handler: async (ctx) => {
@@ -27,8 +36,8 @@ export const getPublicProducts = query({
       .filter((p) => p.items.length > 0)
       .map((x) =>
         x.items.map((i) => ({
-          ingredients: x.ingredients.trim(),
-          name: i.displayName.trim(),
+          ingredients: removeBadSpaces(x.ingredients),
+          name: removeBadSpaces(i.displayName),
           price: i.price,
         }))
       )
