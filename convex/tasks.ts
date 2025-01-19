@@ -18,7 +18,11 @@ export const getTasks = query({
 export const getTask = query({
   args: { id: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.db.get(ctx.db.normalizeId("tasks", args.id)!);
+    const task = await ctx.db.get(ctx.db.normalizeId("tasks", args.id)!);
+    if (!task) {
+      throw Error("Not found");
+    }
+    return task;
   },
 });
 
@@ -38,6 +42,6 @@ export const setTask = mutation({
     } else {
       await ctx.db.patch(documentId!, { isCompleted, text });
     }
-    return await ctx.db.get(documentId!);
+    return (await ctx.db.get(documentId!))!;
   },
 });
