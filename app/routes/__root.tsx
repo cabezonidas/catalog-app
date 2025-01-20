@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import { ClerkProvider } from "@clerk/tanstack-start";
 import React, { Suspense } from "react";
 import appCss from "../styles/index.css?url";
+import favicon from "../styles/favicon.ico?url";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -23,10 +24,13 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "To do list",
+        title: "Repostería De las Artes",
       },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/x-icon", href: favicon },
+    ],
   }),
   component: RootComponent,
 });
