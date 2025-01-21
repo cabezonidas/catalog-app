@@ -6,6 +6,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { AddItemDialog } from "./-ui/AddItemDialog";
 import { useCatalog } from "./-ui/useCatalog";
+import { Id } from "../../../convex/_generated/dataModel";
+import deepEqual from "fast-deep-equal";
 
 const isAdmin = createServerFn()
   .middleware([authMiddleware])
@@ -37,6 +39,67 @@ function RouteComponent() {
     addItemDialog.current?.showModal();
   };
 
+  const groupControl = (
+    groupId: Id<"products"> | number,
+    field: "name" | "ingredients" | "isActive"
+  ) => `id:${groupId}-${field}`;
+
+  const itemControl = (
+    groupId: Id<"products"> | number,
+    productId: number,
+    field: "option" | "price"
+  ) => `id:${groupId}-product:${productId}-${field}`;
+
+  const getData = (form: HTMLFormElement) => {
+    const formData = new FormData(form);
+    type CatalogItem = (typeof data)[number];
+    const modified = data
+      .filter((group) => catalog.find((c) => c._id === group._id))
+      .reduce<CatalogItem[]>((res, group) => {
+        const asBoolean = (field: string) => formData.get(field) === "on";
+        const asString = (field: string) => `${formData.get(field)}`;
+        const asNumber = (field: string) => Number(formData.get(field));
+        const newProps = {
+          name: asString(groupControl(group._id, "name")),
+          ingredients: asString(groupControl(group._id, "ingredients")),
+          isActive: group.items.length
+            ? asBoolean(groupControl(group._id, "isActive"))
+            : group.isActive,
+          items: group.items.map((item) => {
+            const name = asString(
+              itemControl(group._id, item.productId, "option")
+            );
+            const price = asNumber(
+              itemControl(group._id, item.productId, "price")
+            );
+            return {
+              ...item,
+              displayName: name,
+              price,
+              priceInStore: price,
+            };
+          }),
+        };
+        const newGroup = { ...group, ...newProps } as CatalogItem;
+        if (!deepEqual(newGroup, group)) {
+          res = [...res, newGroup];
+        }
+        return res;
+      }, []);
+
+    const deleted = data
+      .filter((group) => !catalog.find((c) => c._id === group._id))
+      .map((c) => c._id);
+
+    const added = catalog
+      .filter((c) => typeof c._id === "number")
+      .map(({ _id, ...rest }) => ({ ...rest }));
+
+    if (added.length + deleted.length + modified.length) {
+      return { added, deleted, modified };
+    }
+  };
+
   return (
     <>
       <AddItemDialog
@@ -52,7 +115,13 @@ function RouteComponent() {
         }}
         onClose={() => setSelectedGroup(undefined)}
       />
-      <div className="grid h-screen max-h-screen overflow-hidden grid-rows-[1fr_auto]">
+      <form
+        className="grid h-screen max-h-screen overflow-hidden grid-rows-[1fr_auto]"
+        onSubmit={(e) => {
+          e.preventDefault();
+          console.log(getData(e.currentTarget));
+        }}
+      >
         <div className="overflow-auto">
           <table className="table">
             <thead className="sticky top-0 bg-white dark:bg-black z-10">
@@ -68,7 +137,7 @@ function RouteComponent() {
                 <tr className="hover" key={group._id}>
                   <td className="grid">
                     <input
-                      name={`id:${group._id}-name`}
+                      name={groupControl(group._id, "name")}
                       placeholder="Nombre"
                       className="input input-lg input-ghost pl-0"
                       required
@@ -82,7 +151,7 @@ function RouteComponent() {
                       required
                       autoComplete="off"
                       defaultValue={group.ingredients}
-                      name={`id:${group._id}-ingredients`}
+                      name={groupControl(group._id, "ingredients")}
                       aria-label="Ingredientes"
                     />
                   </td>
@@ -96,7 +165,7 @@ function RouteComponent() {
                             required
                             autoComplete="off"
                             defaultValue={i.displayName}
-                            name={`id:${group._id}-product:${i.productId}-option`}
+                            name={itemControl(group._id, i.productId, "option")}
                             aria-label={`Opción de ${group.name}`}
                           />
                           <label className="input">
@@ -113,9 +182,13 @@ function RouteComponent() {
                               autoComplete="off"
                               defaultValue={i.price}
                               type="number"
-                              min={1000}
-                              step={1000}
-                              name={`id:${group._id}-product:${i.productId}-price`}
+                              min={500}
+                              step={500}
+                              name={itemControl(
+                                group._id,
+                                i.productId,
+                                "price"
+                              )}
                               aria-label={`Precio de ${i.displayName}`}
                             />
                           </label>
@@ -150,7 +223,7 @@ function RouteComponent() {
                     <input
                       className="toggle"
                       type="checkbox"
-                      name={`id:${group._id}-isActive`}
+                      name={groupControl(group._id, "isActive")}
                       aria-label={`${group.name} visible`}
                       {...(group.items.length === 0
                         ? { disabled: true, readOnly: true, checked: false }
@@ -181,17 +254,34 @@ function RouteComponent() {
           </table>
         </div>
         <footer className="flex content-center p-4">
-          <div className="m-auto">
+          <div className="m-auto flex gap-x-2">
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-outline"
               onClick={() => addItemDialog.current?.showModal()}
             >
               Nuevo producto
             </button>
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={() => {
+                const inputs = document.querySelectorAll("input");
+                inputs.forEach((i) => {
+                  if (i.type === "number" && i.value && i.valueAsNumber) {
+                    i.value = `${i.valueAsNumber * 1.05}`;
+                  }
+                });
+              }}
+            >
+              Aumentar 5%
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Guardar
+            </button>
           </div>
         </footer>
-      </div>
+      </form>
     </>
   );
 }
