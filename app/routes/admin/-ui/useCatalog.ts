@@ -9,6 +9,26 @@ type Catalog = Awaited<
 type Group = Omit<Catalog[number], '_id'> & { _id: number | Id<'products'> };
 type Items = Group['items'];
 
+const groupBase = {
+  _creationTime: 0,
+  flickrAlbumId: '',
+  isPieOfTheWeek: false,
+  longDescription: null,
+  shortDescription: null,
+};
+
+const itemBase = {
+  category: '',
+  displayDescription: '',
+  flavour: '',
+  minOrderAmount: 1,
+  multipleAmount: 1,
+  portions: 1,
+  preparationTime: 1,
+  sizeDescription: '',
+  temperature: '',
+};
+
 export const useCatalog = (data: Group[]) => {
   const [catalog, setCatalog] = useState(data);
 
@@ -34,25 +54,6 @@ export const useCatalog = (data: Group[]) => {
       ),
     []
   );
-
-  const groupBase = {
-    _creationTime: 0,
-    flickrAlbumId: '',
-    isPieOfTheWeek: false,
-    longDescription: null,
-    shortDescription: null,
-  };
-  const itemBase = {
-    category: '',
-    displayDescription: '',
-    flavour: '',
-    minOrderAmount: 1,
-    multipleAmount: 1,
-    portions: 1,
-    preparationTime: 1,
-    sizeDescription: '',
-    temperature: '',
-  };
 
   const addGroupItem = useCallback(
     (props: {
@@ -98,11 +99,6 @@ export const useCatalog = (data: Group[]) => {
             .map((p) => p._id as number)
             .sort()
             .at(-1) ?? 0) + 1;
-        const makeGroupId = (items: Items) =>
-          items.reduce(
-            (res, item) => (item.productId >= res ? item.productId + 1 : res),
-            1
-          );
         const pieDetailId = Math.floor(Math.random() * 100000);
         return [
           {
