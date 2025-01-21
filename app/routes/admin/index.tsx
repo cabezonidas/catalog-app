@@ -4,9 +4,8 @@ import { authMiddleware } from '../../middlewares/authMiddleware';
 import { products } from '../../../convex/products';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
-import { AddGroupItemDialog } from './-ui/AddGroupItemDialog';
+import { AddItemDialog } from './-ui/AddItemDialog';
 import { useCatalog } from './-ui/useCatalog';
-import { AddGroupDialog } from './-ui/AddGroupDialog';
 
 const isAdmin = createServerFn()
   .middleware([authMiddleware])
@@ -26,50 +25,37 @@ export const Route = createFileRoute('/admin/')({
 
 function RouteComponent() {
   const { data } = useSuspenseQuery(products.list());
-  const { catalog, deleteGroup, deleteGroupItem, addGroupItem, addGroup } =
+  const { catalog, deleteGroup, deleteItem, addItem, addGroup } =
     useCatalog(data);
 
-  const [selectedGroup, setSelectedGroup] =
-    useState<(typeof catalog)[number]>();
+  type Group = (typeof catalog)[number];
+  const [selectedGroup, setSelectedGroup] = useState<Group>();
+  const addItemDialog = useRef<HTMLDialogElement>(null);
 
-  const addGroupItemDialog = useRef<HTMLDialogElement>(null);
-  const addGroupDialog = useRef<HTMLDialogElement>(null);
+  const openModal = (group?: Group) => {
+    setSelectedGroup(group);
+    addItemDialog.current?.showModal();
+    addItemDialog.current?.getElementsByTagName('input')[0]?.focus();
+  };
 
   return (
     <>
-      <AddGroupItemDialog
-        ref={addGroupItemDialog}
-        groupName={selectedGroup?.name ?? ''}
-        placeholderName={
-          selectedGroup ? `ej. ${selectedGroup.name} con Crema` : undefined
-        }
-        placeholderPrice={selectedGroup?.items.at(0)?.price}
-        onAdd={(props) => {
+      <AddItemDialog
+        ref={addItemDialog}
+        group={selectedGroup}
+        onAdd={({ name, ingredients, price }) => {
           if (selectedGroup) {
-            addGroupItem({
-              groupId: selectedGroup._id,
-              name: props.name,
-              price: props.price,
-            });
+            addItem({ groupId: selectedGroup._id, name, price });
+          } else {
+            addGroup({ name, price, ingredients });
           }
-          setSelectedGroup(undefined);
-          addGroupItemDialog.current?.close();
+          addItemDialog.current?.close();
         }}
         onClose={() => setSelectedGroup(undefined)}
       />
-      <AddGroupDialog
-        ref={addGroupDialog}
-        onAdd={(props) => {
-          addGroup(props);
-          addGroupDialog.current?.close();
-        }}
-      />
       <div>
         <div className="text-lg">Catálogo</div>
-        <button
-          type="button"
-          onClick={() => addGroupDialog.current?.showModal()}
-        >
+        <button type="button" onClick={() => openModal()}>
           Nuevo producto
         </button>
         <table className="table">
@@ -141,7 +127,7 @@ function RouteComponent() {
                           className="btn btn-sm btn-circle btn-ghost pointer"
                           type="button"
                           onClick={() =>
-                            deleteGroupItem({
+                            deleteItem({
                               groupId: group._id,
                               productId: i.productId,
                             })
@@ -152,24 +138,17 @@ function RouteComponent() {
                       </ul>
                     ))}
                   </div>
-                  <div className="flex justify-around">
-                    <button
-                      type="button"
-                      className={
-                        group.items.length > 0
-                          ? 'btn btn-sm btn-circle btn-ghost pointer'
-                          : 'btn btn-ghost m-auto'
-                      }
-                      onClick={() => {
-                        addGroupItemDialog.current?.showModal();
-                        setSelectedGroup(group);
-                      }}
-                    >
-                      {group.items.length > 0
-                        ? '+'
-                        : `Agregar opción de ${group.name.trim()}`}
-                    </button>
-                  </div>
+                  {group.items.length === 0 && (
+                    <div className="flex justify-around">
+                      <button
+                        type="button"
+                        className="btn btn-ghost m-auto"
+                        onClick={() => openModal(group)}
+                      >
+                        {`Agregar opción de ${group.name.trim()}`}
+                      </button>
+                    </div>
+                  )}
                 </td>
                 <td>
                   <input
@@ -178,16 +157,28 @@ function RouteComponent() {
                     name={`id:${group._id}-isActive`}
                     defaultChecked={group.isActive}
                     aria-label={`${group.name} visible`}
+                    {...(group.items.length === 0
+                      ? { disabled: true, readOnly: true, checked: false }
+                      : undefined)}
                   />
                 </td>
                 <td>
-                  <button
-                    type="button"
-                    className="btn btn-link"
-                    onClick={() => deleteGroup(group._id)}
-                  >
-                    Eliminar
-                  </button>
+                  <div>
+                    <button
+                      type="button"
+                      className="btn btn-link"
+                      onClick={() => openModal(group)}
+                    >
+                      Agregar opción
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-link"
+                      onClick={() => deleteGroup(group._id)}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

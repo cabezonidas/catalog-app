@@ -38,7 +38,7 @@ export const useCatalog = (data: Group[]) => {
     []
   );
 
-  const deleteGroupItem = useCallback(
+  const deleteItem = useCallback(
     (props: { groupId: Id<'products'> | number; productId: number }) =>
       setCatalog((prev) =>
         prev.map((product) =>
@@ -55,7 +55,7 @@ export const useCatalog = (data: Group[]) => {
     []
   );
 
-  const addGroupItem = useCallback(
+  const addItem = useCallback(
     (props: {
       groupId: Id<'products'> | number;
       name: string;
@@ -126,5 +126,5 @@ export const useCatalog = (data: Group[]) => {
     []
   );
 
-  return { catalog, deleteGroup, deleteGroupItem, addGroupItem, addGroup };
+  return { catalog, deleteGroup, deleteItem, addItem, addGroup };
 };
