@@ -1,7 +1,7 @@
-import { RefObject } from 'react';
-import { useCatalog } from './useCatalog';
+import { RefObject } from "react";
+import { useCatalog } from "./useCatalog";
 
-type Group = ReturnType<typeof useCatalog>['catalog'][number];
+type Group = ReturnType<typeof useCatalog>["catalog"][number];
 
 export const AddItemDialog = ({
   group,
@@ -14,9 +14,9 @@ export const AddItemDialog = ({
   onAdd: (props: { name: string; price: number; ingredients: string }) => void;
   onClose: () => void;
 }) => {
-  const newName = 'new-name';
-  const newIngredients = 'new-ingredients';
-  const newPrice = 'new-price';
+  const newName = "new-name";
+  const newIngredients = "new-ingredients";
+  const newPrice = "new-price";
 
   const heading = group?.name
     ? `Nueva variedad de ${group.name}!`
@@ -24,11 +24,18 @@ export const AddItemDialog = ({
 
   const placeholderName = group
     ? `ej. ${group.name} con Crema`
-    : 'Pastel del Oeste';
+    : "Pastel del Oeste";
   const placeholderPrice = `ej. ${group?.items.at(0)?.price ?? 40000}`;
 
   return (
-    <dialog ref={ref} className="modal" onClose={onClose}>
+    <dialog
+      ref={ref}
+      className="modal"
+      onClose={(e) => {
+        e.currentTarget.getElementsByTagName("form")[0]?.reset();
+        onClose();
+      }}
+    >
       <form
         className="modal-box"
         onSubmit={(e) => {
@@ -36,10 +43,9 @@ export const AddItemDialog = ({
           e.preventDefault();
           onAdd({
             name: String(formData.get(newName)),
-            ingredients: !group ? String(formData.get(newIngredients)) : '',
+            ingredients: !group ? String(formData.get(newIngredients)) : "",
             price: Number(formData.get(newPrice)),
           });
-          e.currentTarget.reset();
         }}
       >
         <h3 className="font-bold text-lg">{heading}</h3>
