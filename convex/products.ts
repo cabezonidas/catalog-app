@@ -21,10 +21,29 @@ const removeBadSpaces = (text: string) => {
 export const getProducts = query({
   args: {},
   handler: async (ctx) => {
-    return (await ctx.db.query('products').collect()).map((p) => ({
+    const list = (await ctx.db.query('products').collect()).map((p) => ({
       ...p,
       name: removeBadSpaces(p.name),
     }));
+
+    const sortCatalog = (data: typeof list): typeof list => {
+      const priority = data
+        .filter((p) => p.isActive && p.items.length)
+        .map((p) => ({ ...p, name: p.name.trim() }))
+        .sort((a, b) => (a.name > b.name ? 1 : -1));
+
+      const rest = data.filter((p) => !priority.some((c) => c._id === p._id));
+      const restEmpty = rest
+        .filter((r) => !Boolean(r.items.length))
+        .sort((a, b) => (a.name > b.name ? 1 : -1));
+      const restNonEmpty = rest
+        .filter((r) => Boolean(r.items.length))
+        .sort((a, b) => (a.name > b.name ? 1 : -1));
+
+      return [...priority, ...restNonEmpty, ...restEmpty];
+    };
+
+    return sortCatalog(list);
   },
 });
 
