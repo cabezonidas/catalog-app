@@ -5,10 +5,9 @@ export const AddGroupDialog = ({
   onAdd,
   onClose,
 }: {
-  groupName: string;
   ref: RefObject<HTMLDialogElement | null>;
-  onAdd: (props: { name: string; price: number }) => void;
-  onClose: () => void;
+  onAdd: (props: { name: string; ingredients: string; price: number }) => void;
+  onClose?: () => void;
 }) => {
   const newGroupName = 'new-group-name';
   const newGroupIngredients = 'new-group-ingredients';
@@ -22,6 +21,7 @@ export const AddGroupDialog = ({
           e.preventDefault();
           onAdd({
             name: String(formData.get(newGroupName)),
+            ingredients: String(formData.get(newGroupIngredients)),
             price: Number(formData.get(newGroupPrice)),
           });
           e.currentTarget.reset();

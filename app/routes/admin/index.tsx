@@ -6,6 +6,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { AddGroupItemDialog } from './-ui/AddGroupItemDialog';
 import { useCatalog } from './-ui/useCatalog';
+import { AddGroupDialog } from './-ui/AddGroupDialog';
 
 const isAdmin = createServerFn()
   .middleware([authMiddleware])
@@ -25,12 +26,14 @@ export const Route = createFileRoute('/admin/')({
 
 function RouteComponent() {
   const { data } = useSuspenseQuery(products.list());
-  const { catalog, deleteGroup, deleteGroupItem, addGroupItem } =
+  const { catalog, deleteGroup, deleteGroupItem, addGroupItem, addGroup } =
     useCatalog(data);
 
   const [selectedGroup, setSelectedGroup] =
     useState<(typeof catalog)[number]>();
+
   const addGroupItemDialog = useRef<HTMLDialogElement>(null);
+  const addGroupDialog = useRef<HTMLDialogElement>(null);
 
   return (
     <>
@@ -41,7 +44,7 @@ function RouteComponent() {
           selectedGroup ? `ej. ${selectedGroup.name} con Crema` : undefined
         }
         placeholderPrice={selectedGroup?.items.at(0)?.price}
-        onAdd={(props: { name: string; price: number }) => {
+        onAdd={(props) => {
           if (selectedGroup) {
             addGroupItem({
               groupId: selectedGroup._id,
@@ -54,8 +57,21 @@ function RouteComponent() {
         }}
         onClose={() => setSelectedGroup(undefined)}
       />
+      <AddGroupDialog
+        ref={addGroupDialog}
+        onAdd={(props) => {
+          addGroup(props);
+          addGroupDialog.current?.close();
+        }}
+      />
       <div>
         <div className="text-lg">Catálogo</div>
+        <button
+          type="button"
+          onClick={() => addGroupDialog.current?.showModal()}
+        >
+          Nuevo producto
+        </button>
         <table className="table">
           <thead>
             <tr>
