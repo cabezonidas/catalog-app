@@ -2,12 +2,19 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { authMiddleware } from "../../middlewares/authMiddleware";
 import { products } from "../../../convex/products";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { AddItemDialog } from "./-ui/AddItemDialog";
 import { useCatalog } from "./-ui/useCatalog";
 import { Id } from "../../../convex/_generated/dataModel";
 import deepEqual from "fast-deep-equal";
+import { useConvexMutation } from "@convex-dev/react-query";
+import { api } from "../../../convex/_generated/api";
+
+function useUpdateMutation() {
+  const mutationFn = useConvexMutation(api.products.setProducts);
+  return useMutation({ mutationFn });
+}
 
 const isAdmin = createServerFn()
   .middleware([authMiddleware])
@@ -53,8 +60,12 @@ function RouteComponent() {
     const formData = new FormData(form);
     type CatalogItem = (typeof data)[number];
     const modified = data
-      .filter((group) => catalog.find((c) => c._id === group._id))
-      .reduce<CatalogItem[]>((res, group) => {
+      .map((group) => ({
+        group,
+        state: catalog.find((c) => c._id === group._id),
+      }))
+      .filter(({ state }) => state !== undefined)
+      .reduce<CatalogItem[]>((res, { group, state }) => {
         const asBoolean = (field: string) => formData.get(field) === "on";
         const asString = (field: string) => `${formData.get(field)}`;
         const asNumber = (field: string) => Number(formData.get(field));
@@ -64,7 +75,7 @@ function RouteComponent() {
           isActive: group.items.length
             ? asBoolean(groupControl(group._id, "isActive"))
             : group.isActive,
-          items: group.items.map((item) => {
+          items: state!.items.map((item) => {
             const name = asString(
               itemControl(group._id, item.productId, "option")
             );
@@ -84,7 +95,8 @@ function RouteComponent() {
           res = [...res, newGroup];
         }
         return res;
-      }, []);
+      }, [])
+      .map(({ _id, _creationTime, ...value }) => ({ _id, value }));
 
     const deleted = data
       .filter((group) => !catalog.find((c) => c._id === group._id))
@@ -99,6 +111,7 @@ function RouteComponent() {
     }
   };
 
+  const { mutateAsync, isPending } = useUpdateMutation();
   return (
     <>
       <AddItemDialog
@@ -116,9 +129,17 @@ function RouteComponent() {
       />
       <form
         className="grid h-screen max-h-screen overflow-hidden grid-rows-[1fr_auto]"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          console.log(getData(e.currentTarget));
+          const payload = getData(e.currentTarget);
+          if (payload) {
+            const { added, deleted, modified } = payload;
+            try {
+              await mutateAsync({ added, deleted, modified });
+            } catch {
+              alert("Hubo un error y no se guardaron los cambios");
+            }
+          }
         }}
       >
         <div className="overflow-auto">
@@ -276,8 +297,12 @@ function RouteComponent() {
             >
               Aumentar 5%
             </button>
-            <button type="submit" className="btn btn-primary">
-              Guardar
+            <button className="btn btn-primary" disabled={isPending}>
+              {isPending ? (
+                <span className="loading loading-spinner loading-md"></span>
+              ) : (
+                "Guardar"
+              )}
             </button>
           </div>
         </footer>

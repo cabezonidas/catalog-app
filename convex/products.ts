@@ -1,7 +1,8 @@
 import { convexQuery } from "@convex-dev/react-query";
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { api } from "./_generated/api";
 import { v } from "convex/values";
+import schema from "./schema";
 
 export const products = {
   list: () => convexQuery(api.products.getProducts, {}),
@@ -68,13 +69,24 @@ export const getPublicProducts = query({
   },
 });
 
-export const getProduct = query({
-  args: { id: v.string() },
+export const setProducts = mutation({
+  args: {
+    added: v.array(schema.tables.products.validator),
+    deleted: v.array(v.id("products")),
+    modified: v.array(
+      v.object({
+        _id: v.id("products"),
+        value: schema.tables.products.validator,
+      })
+    ),
+  },
   handler: async (ctx, args) => {
-    const task = await ctx.db.get(ctx.db.normalizeId("products", args.id)!);
-    if (!task) {
-      throw Error("Not found");
-    }
-    return task;
+    const { added, deleted, modified } = args;
+    await Promise.all(added.map((p) => ctx.db.insert("products", p)));
+    await Promise.all(deleted.map((id) => ctx.db.delete(id)));
+    await Promise.all(
+      modified.map(({ _id, value }) => ctx.db.replace(_id, value))
+    );
+    return;
   },
 });
