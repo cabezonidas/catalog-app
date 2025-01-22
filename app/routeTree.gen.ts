@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as FileImport } from './routes/file'
+import { Route as ClerkImport } from './routes/clerk'
 import { Route as IndexImport } from './routes/index'
 import { Route as AdminIndexImport } from './routes/admin/index'
 import { Route as TasksTasksImport } from './routes/_tasks/tasks'
@@ -25,6 +26,12 @@ import { Route as TasksTasksTaskIdEditImport } from './routes/_tasks/tasks/$task
 const FileRoute = FileImport.update({
   id: '/file',
   path: '/file',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ClerkRoute = ClerkImport.update({
+  id: '/clerk',
+  path: '/clerk',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -79,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/clerk': {
+      id: '/clerk'
+      path: '/clerk'
+      fullPath: '/clerk'
+      preLoaderRoute: typeof ClerkImport
       parentRoute: typeof rootRoute
     }
     '/file': {
@@ -164,6 +178,7 @@ const TasksTasksRouteWithChildren = TasksTasksRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/clerk': typeof ClerkRoute
   '/file': typeof FileRoute
   '/tasks': typeof TasksTasksRouteWithChildren
   '/admin': typeof AdminIndexRoute
@@ -175,6 +190,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/clerk': typeof ClerkRoute
   '/file': typeof FileRoute
   '/admin': typeof AdminIndexRoute
   '/tasks/$taskId': typeof TasksTasksTaskIdRouteWithChildren
@@ -186,6 +202,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/clerk': typeof ClerkRoute
   '/file': typeof FileRoute
   '/_tasks/tasks': typeof TasksTasksRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -199,6 +216,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/clerk'
     | '/file'
     | '/tasks'
     | '/admin'
@@ -209,6 +227,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/clerk'
     | '/file'
     | '/admin'
     | '/tasks/$taskId'
@@ -218,6 +237,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/clerk'
     | '/file'
     | '/_tasks/tasks'
     | '/admin/'
@@ -230,6 +250,7 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ClerkRoute: typeof ClerkRoute
   FileRoute: typeof FileRoute
   TasksTasksRoute: typeof TasksTasksRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -237,6 +258,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ClerkRoute: ClerkRoute,
   FileRoute: FileRoute,
   TasksTasksRoute: TasksTasksRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
@@ -253,6 +275,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/clerk",
         "/file",
         "/_tasks/tasks",
         "/admin/"
@@ -260,6 +283,9 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/clerk": {
+      "filePath": "clerk.tsx"
     },
     "/file": {
       "filePath": "file.tsx"
