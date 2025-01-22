@@ -18,10 +18,9 @@ const isAdmin = createServerFn()
   });
 
 export const Route = createFileRoute("/admin/")({
-  loader: async ({ context: { queryClient } }) => {
-    await isAdmin();
-    return { catalog: await queryClient.ensureQueryData(products.list()) };
-  },
+  beforeLoad: () => isAdmin(),
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(products.list()),
   component: RouteComponent,
 });
 
