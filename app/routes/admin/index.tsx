@@ -93,7 +93,7 @@ function RouteComponent() {
 
     const added = catalog
       .filter((c) => typeof c._id === "number")
-      .map(({ _id, ...rest }) => ({ ...rest }));
+      .map(({ _id, _creationTime, ...rest }) => ({ ...rest }));
 
     if (added.length + deleted.length + modified.length) {
       return { added, deleted, modified };
