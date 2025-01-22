@@ -134,30 +134,35 @@ function RouteComponent() {
             <tbody>
               {catalog.map((group) => (
                 <tr className="hover" key={group._id}>
-                  <td className="grid">
-                    <input
-                      name={groupControl(group._id, "name")}
-                      placeholder="Nombre"
-                      className="input input-lg input-ghost pl-0"
-                      required
-                      autoComplete="off"
-                      defaultValue={group.name}
-                      aria-label="Nombre"
-                    />
-                    <textarea
-                      placeholder="Nombre"
-                      className="textarea textarea-ghost pl-0"
-                      required
-                      autoComplete="off"
-                      defaultValue={group.ingredients}
-                      name={groupControl(group._id, "ingredients")}
-                      aria-label="Ingredientes"
-                    />
+                  <td className="relative">
+                    <div className="grid grid-rows-[auto_1fr] h-[100%]">
+                      <input
+                        name={groupControl(group._id, "name")}
+                        placeholder="Nombre"
+                        className="input input-lg input-ghost pl-0"
+                        required
+                        autoComplete="off"
+                        defaultValue={group.name}
+                        aria-label="Nombre"
+                      />
+                      <textarea
+                        placeholder="Nombre"
+                        className="textarea textarea-ghost pl-0"
+                        required
+                        autoComplete="off"
+                        defaultValue={group.ingredients}
+                        name={groupControl(group._id, "ingredients")}
+                        aria-label="Ingredientes"
+                      />
+                    </div>
                   </td>
                   <td>
-                    <div className="grid gap-y-2">
+                    <ul className="grid gap-y-2">
                       {group.items.map((i) => (
-                        <ul key={i.productId} className="flex">
+                        <li
+                          key={i.productId}
+                          className="flex last-of-type:mb-2 items-center gap-x-2 first-of-type:mt-12"
+                        >
                           <input
                             placeholder="Nombre"
                             className="input input-ghost w-full max-w-xs pl-0"
@@ -167,7 +172,7 @@ function RouteComponent() {
                             name={itemControl(group._id, i.productId, "option")}
                             aria-label={`Opción de ${group.name}`}
                           />
-                          <label className="input">
+                          <label className="input w-[180px] min-w-[180px]">
                             <span className="label">
                               <div>
                                 <div>Precio</div>
@@ -203,20 +208,25 @@ function RouteComponent() {
                           >
                             ✕
                           </button>
-                        </ul>
+                        </li>
                       ))}
+                    </ul>
+
+                    <div className="flex justify-around">
+                      <button
+                        type="button"
+                        className={
+                          group.items.length === 0
+                            ? "btn btn-ghost m-auto"
+                            : "btn btn-sm btn-circle btn-ghost pointer m-auto"
+                        }
+                        onClick={() => openModal(group)}
+                      >
+                        {group.items.length === 0
+                          ? `Agregar opción de ${group.name.trim()}`
+                          : "+"}
+                      </button>
                     </div>
-                    {group.items.length === 0 && (
-                      <div className="flex justify-around">
-                        <button
-                          type="button"
-                          className="btn btn-ghost m-auto"
-                          onClick={() => openModal(group)}
-                        >
-                          {`Agregar opción de ${group.name.trim()}`}
-                        </button>
-                      </div>
-                    )}
                   </td>
                   <td>
                     <input
@@ -230,22 +240,13 @@ function RouteComponent() {
                     />
                   </td>
                   <td>
-                    <div>
-                      <button
-                        type="button"
-                        className="btn btn-link"
-                        onClick={() => openModal(group)}
-                      >
-                        Agregar opción
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-link"
-                        onClick={() => deleteGroup(group._id)}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-outline btn-error"
+                      onClick={() => deleteGroup(group._id)}
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -268,7 +269,7 @@ function RouteComponent() {
                 const inputs = document.querySelectorAll("input");
                 inputs.forEach((i) => {
                   if (i.type === "number" && i.value && i.valueAsNumber) {
-                    i.value = `${i.valueAsNumber * 1.05}`;
+                    i.value = `${parseInt(`${i.valueAsNumber * 1.05}`)}`;
                   }
                 });
               }}
