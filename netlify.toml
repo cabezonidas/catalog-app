@@ -1,8 +1,0 @@
-[build]
-  functions = ".netlify/functions-internal"
-  publish = "dist"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200

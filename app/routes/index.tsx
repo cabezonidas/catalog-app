@@ -152,7 +152,6 @@ ${cart.map((i) => `${i.amount}x ${i.name}`).join("\n")}\n
           {sorted.map((p) => (
             <Row key={p.id} product={p} />
           ))}
-          {sorted.length !== catalog.length && <div className="divider" />}
           {rest.map((p) => (
             <Row key={p.id} product={p} />
           ))}
