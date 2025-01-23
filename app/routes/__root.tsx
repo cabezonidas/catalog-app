@@ -1,4 +1,5 @@
 import {
+  Navigate,
   Outlet,
   ScrollRestoration,
   createRootRouteWithContext,
@@ -33,6 +34,7 @@ export const Route = createRootRouteWithContext<{
     ],
   }),
   component: RootComponent,
+  notFoundComponent: () => <Navigate to="/" />,
 });
 
 const TanStackRouterDevtools =
