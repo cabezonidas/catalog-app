@@ -3,6 +3,12 @@ import { getAuth } from "@clerk/tanstack-start/server";
 import { getWebRequest } from "vinxi/http";
 import { createClerkClient } from "@clerk/backend";
 
+const whitelistedEmails = [
+  "sebastian.cabeza@proton.me",
+  "cabeza1961@gmail.com",
+  "marcelardec@gmail.com",
+];
+
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const { userId, has } = await getAuth(getWebRequest(), {});
 
@@ -16,7 +22,13 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
     throw Error("Not authenticated");
   }
 
+  const isVerified =
+    user.primaryEmailAddress?.verification?.status === "verified";
+  const isWhitelisted = whitelistedEmails.some(
+    (i) => i === user.primaryEmailAddress?.emailAddress
+  );
+
   return next({
-    context: { user, isAdmin: has({ permission: "org:sys_domains:manage" }) },
+    context: { user, isAdmin: isVerified && isWhitelisted },
   });
 });
