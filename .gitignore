@@ -3,3 +3,7 @@ count.txt
 .env
 
 .env.local
+
+.netlify
+.vinxi
+dist

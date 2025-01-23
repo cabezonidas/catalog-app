@@ -1,0 +1,3 @@
+[build]
+  functions = ".netlify/functions-internal/server"
+  publish = "dist"
