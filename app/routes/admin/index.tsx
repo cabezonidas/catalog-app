@@ -27,7 +27,7 @@ const isAdmin = createServerFn()
 export const Route = createFileRoute("/admin/")({
   beforeLoad: () => isAdmin(),
   loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData(products.list()),
+    queryClient?.ensureQueryData(products.list()),
   component: RouteComponent,
 });
 
