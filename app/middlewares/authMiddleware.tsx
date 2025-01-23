@@ -17,6 +17,6 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
   }
 
   return next({
-    context: { user, isAdmin: has({ permission: "org:catalog:manage" }) },
+    context: { user, isAdmin: has({ permission: "org:sys_domains:manage" }) },
   });
 });
