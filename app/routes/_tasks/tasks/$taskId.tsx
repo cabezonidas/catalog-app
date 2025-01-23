@@ -9,7 +9,7 @@ import { tasks } from "../../../../convex/tasks";
 
 export const Route = createFileRoute("/_tasks/tasks/$taskId")({
   loader: async ({ params, context: { queryClient } }) => {
-    await queryClient.ensureQueryData(tasks.get(params.taskId));
+    await queryClient?.ensureQueryData(tasks.get(params.taskId));
   },
   component: RouteComponent,
 });

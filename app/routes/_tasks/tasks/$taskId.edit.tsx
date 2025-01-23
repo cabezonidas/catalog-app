@@ -6,7 +6,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_tasks/tasks/$taskId/edit")({
   loader: async ({ params, context: { queryClient } }) => {
-    const data = await queryClient.ensureQueryData(tasks.get(params.taskId));
+    const data = await queryClient?.ensureQueryData(tasks.get(params.taskId));
     return data;
   },
   component: RouteComponent,

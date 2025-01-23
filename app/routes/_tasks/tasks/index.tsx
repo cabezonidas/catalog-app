@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_tasks/tasks/")({
   loader: async ({ context: { queryClient } }) => {
-    await queryClient.ensureQueryData(tasks.list());
+    await queryClient?.ensureQueryData(tasks.list());
   },
   component: RouteComponent,
 });

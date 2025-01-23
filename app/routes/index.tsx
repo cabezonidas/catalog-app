@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
   component: Home,
   loader: async ({ context: { queryClient } }) => {
     return {
-      catalog: await queryClient.ensureQueryData(products.publicList()),
+      catalog: await queryClient?.ensureQueryData(products.publicList()),
     };
   },
 });
