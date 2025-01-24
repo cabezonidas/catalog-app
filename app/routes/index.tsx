@@ -144,7 +144,7 @@ ${cart.map((i) => `${i.amount}x ${i.name}`).join("\n")}\n
           <input
             type="search"
             value={search}
-            placeholder="Buscar (eg. frola)"
+            placeholder="Buscar (ej. frola)"
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
