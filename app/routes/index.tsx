@@ -123,7 +123,7 @@ ${cart.map((i) => `${i.amount}x ${i.name}`).join("\n")}\n
           <button>Cancelar</button>
         </form>
       </dialog>
-      <div className="grid justify-center gap-y-4 p-4 overflow-hidden grid-rows-[auto_1fr_auto] max-h-screen sm:max-h-dvh">
+      <div className="grid justify-center gap-y-4 p-4 overflow-hidden grid-rows-[auto_1fr_auto] h-screen sm:h-svh">
         <label className="input w-[100%]">
           <svg
             className="h-[1em] opacity-50"
