@@ -1,6 +1,5 @@
-import { SignedIn, SignedOut, SignInButton } from "@clerk/tanstack-start";
 import * as fs from "node:fs";
-import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 
 const filePath = "count.txt";

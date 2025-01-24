@@ -10,7 +10,6 @@ import type { ReactNode } from "react";
 import { ClerkProvider } from "@clerk/tanstack-start";
 import React, { Suspense } from "react";
 import appCss from "../styles/index.css?url";
-import favicon from "../styles/favicon.ico?url";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -30,7 +29,7 @@ export const Route = createRootRouteWithContext<{
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/x-icon", href: favicon },
+      { rel: "icon", href: "favicon.ico" },
     ],
   }),
   component: RootComponent,
