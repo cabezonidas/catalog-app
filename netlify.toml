@@ -1,0 +1,4 @@
+[[redirects]]
+  from = "/_build/assets/*"
+  to = "/assets/:splat"
+  status = 200
