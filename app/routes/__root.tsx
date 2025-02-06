@@ -17,19 +17,29 @@ export const Route = createRootRouteWithContext<{
   head: () => ({
     meta: [
       {
-        charSet: "utf-8",
+        charSet: 'utf-8',
       },
       {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1',
       },
       {
-        title: "Repostería De las Artes",
+        title: 'Repostería De las Artes',
       },
+      { name: 'description', content: 'Repostería de las Artes' },
+      {
+        name: 'og:image',
+        content:
+          'https://farm2.staticflickr.com/1723/42396655401_7355bbdf7f_z.jpg',
+      },
+      { name: 'og:url', content: 'https://delasartes.com.ar' },
+      { name: 'og:type', content: 'product' },
+      { name: 'og:title', content: 'De las Artes' },
+      { name: 'og:description', content: 'Pastelería Artesanal' },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "favicon.ico" },
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', href: 'favicon.ico' },
     ],
   }),
   component: RootComponent,
@@ -37,10 +47,10 @@ export const Route = createRootRouteWithContext<{
 });
 
 const TanStackRouterDevtools =
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === 'production'
     ? () => null
     : React.lazy(() =>
-        import("@tanstack/router-devtools").then((res) => ({
+        import('@tanstack/router-devtools').then((res) => ({
           default: res.TanStackRouterDevtools,
         }))
       );
