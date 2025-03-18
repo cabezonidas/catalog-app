@@ -34,7 +34,7 @@ function Home() {
     return {
       ...item,
       amount: q,
-      subtotal: q * item.price,
+      subtotal: (q || 0) * item.price,
     };
   });
 
@@ -98,13 +98,17 @@ Total: $${total}\n
                     min={1}
                     max={10}
                     value={amount}
-                    onChange={(e) => {
-                      const valuAsNumber = e.target.valueAsNumber || 1;
+                    onBlur={(e) => {
+                      if (!e.target.value) {
+                        setQuantity((prev) => ({ ...prev, [id]: 0 }));
+                      }
+                    }}
+                    onChange={(e) =>
                       setQuantity((prev) => ({
                         ...prev,
-                        [id]: Math.max(Math.min(valuAsNumber, 10), 1),
-                      }));
-                    }}
+                        [id]: Math.max(Math.min(e.target.valueAsNumber, 10), 1),
+                      }))
+                    }
                   />
                   <div>
                     <div>{name}</div>
@@ -116,9 +120,13 @@ Total: $${total}\n
           </div>
           <div>Total ${total}</div>
           <a
-            className="btn btn-active btn-success mt-4 w-max"
-            href={`https://wa.me/5491127778899?text=${encodeURIComponent(waText)}`}
-            target="_blank"
+            className={`btn btn-active ${total ? "btn-success" : "btn-neutral"} mt-4 w-max`}
+            href={
+              total
+                ? `https://wa.me/5491127778899?text=${encodeURIComponent(waText)}`
+                : "#"
+            }
+            target={total ? "_blank" : undefined}
             rel="noopener noreferrer"
           >
             Continuar por WhatsApp
