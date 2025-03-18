@@ -42,7 +42,11 @@ function Home() {
 
   const waText = `¡Hola!\n
 Me gustaría encargar lo siguiente:\n
-${cart.map((i) => `${i.amount}x ${i.name}`).join("\n")}\n
+${cart
+  .filter((i) => i.amount)
+  .map((i) => `${i.amount}x ${i.name}\n$${i.price} por unidad\n`)
+  .join("\n")}
+Total: $${total}\n
 ¡Gracias!`;
 
   const dialog = useRef<HTMLDialogElement>(null);
@@ -89,17 +93,18 @@ ${cart.map((i) => `${i.amount}x ${i.name}`).join("\n")}\n
               return (
                 <div key={id} className="flex gap-x-1 items-center">
                   <input
-                    className="input input-sm input-ghost w-12 p-l-2"
+                    className="input input-sm input-ghost w-18 p-l-2 mx-1"
                     type="number"
                     min={1}
                     max={10}
                     value={amount}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const valuAsNumber = e.target.valueAsNumber || 1;
                       setQuantity((prev) => ({
                         ...prev,
-                        [id]: Math.max(Math.min(e.target.valueAsNumber, 10), 1),
-                      }))
-                    }
+                        [id]: Math.max(Math.min(valuAsNumber, 10), 1),
+                      }));
+                    }}
                   />
                   <div>
                     <div>{name}</div>
